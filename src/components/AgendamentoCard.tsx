@@ -1,56 +1,99 @@
 
 import { Tables } from "@/integrations/supabase/types";
 import { formatDate, formatTime } from "@/utils/dateFormatters";
+import { Calendar, Clock, User, Phone, UserCheck } from "lucide-react";
 
 interface AgendamentoCardProps {
   agendamento: Tables<"agendamentos_robustos">;
 }
 
-const getStatusColor = (status: string) => {
+const getStatusConfig = (status: string) => {
   switch (status) {
     case 'AGENDADO':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return {
+        bg: 'bg-emerald-50 border-emerald-200',
+        text: 'text-emerald-800',
+        badge: 'bg-emerald-100 text-emerald-700 border-emerald-300',
+        icon: '✓'
+      };
     case 'REAGENDADO':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return {
+        bg: 'bg-amber-50 border-amber-200',
+        text: 'text-amber-800',
+        badge: 'bg-amber-100 text-amber-700 border-amber-300',
+        icon: '↻'
+      };
     case 'CANCELADO':
-      return 'bg-red-100 text-red-800 border-red-200';
+      return {
+        bg: 'bg-red-50 border-red-200',
+        text: 'text-red-800',
+        badge: 'bg-red-100 text-red-700 border-red-300',
+        icon: '✕'
+      };
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return {
+        bg: 'bg-gray-50 border-gray-200',
+        text: 'text-gray-800',
+        badge: 'bg-gray-100 text-gray-700 border-gray-300',
+        icon: '•'
+      };
   }
 };
 
 export const AgendamentoCard = ({ agendamento }: AgendamentoCardProps) => {
+  const statusConfig = getStatusConfig(agendamento.STATUS || 'AGENDADO');
+
   return (
-    <div className="bg-card rounded-lg border p-4 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start mb-3">
-        <h3 className="font-semibold text-card-foreground">{agendamento.NOME}</h3>
-        <span className={`px-2 py-1 rounded text-xs font-medium border ${getStatusColor(agendamento.STATUS || 'AGENDADO')}`}>
-          {agendamento.STATUS}
+    <div className={`${statusConfig.bg} rounded-xl border-2 p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer`}>
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex items-center space-x-3">
+          <div className="bg-white p-2 rounded-lg shadow-sm">
+            <User className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-bold text-lg text-gray-900">{agendamento.NOME}</h3>
+          </div>
+        </div>
+        <span className={`px-3 py-1 rounded-full text-sm font-semibold border-2 flex items-center space-x-1 ${statusConfig.badge}`}>
+          <span>{statusConfig.icon}</span>
+          <span>{agendamento.STATUS}</span>
         </span>
       </div>
       
-      <div className="space-y-2 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">Data:</span>
-          <span>{formatDate(agendamento.DATA)}</span>
+      <div className="space-y-3">
+        <div className="flex items-center space-x-3 bg-white/60 p-3 rounded-lg">
+          <Calendar className="w-4 h-4 text-primary" />
+          <div>
+            <span className="text-sm text-gray-600 font-medium">Data:</span>
+            <span className="ml-2 font-semibold text-gray-800">{formatDate(agendamento.DATA)}</span>
+          </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          <span className="font-medium">Hora:</span>
-          <span>{formatTime(agendamento.HORA)}</span>
+        <div className="flex items-center space-x-3 bg-white/60 p-3 rounded-lg">
+          <Clock className="w-4 h-4 text-primary" />
+          <div>
+            <span className="text-sm text-gray-600 font-medium">Hora:</span>
+            <span className="ml-2 font-semibold text-gray-800">{formatTime(agendamento.HORA)}</span>
+          </div>
         </div>
         
         {agendamento.PROFISSIONAL && (
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Profissional:</span>
-            <span>{agendamento.PROFISSIONAL}</span>
+          <div className="flex items-center space-x-3 bg-white/60 p-3 rounded-lg">
+            <UserCheck className="w-4 h-4 text-primary" />
+            <div>
+              <span className="text-sm text-gray-600 font-medium">Profissional:</span>
+              <span className="ml-2 font-semibold text-gray-800">{agendamento.PROFISSIONAL}</span>
+            </div>
           </div>
         )}
         
         {agendamento.CONTATO && (
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Contato:</span>
-            <span>{agendamento.CONTATO}</span>
+          <div className="flex items-center space-x-3 bg-white/60 p-3 rounded-lg">
+            <Phone className="w-4 h-4 text-primary" />
+            <div>
+              <span className="text-sm text-gray-600 font-medium">Contato:</span>
+              <span className="ml-2 font-semibold text-gray-800">{agendamento.CONTATO}</span>
+            </div>
           </div>
         )}
       </div>
